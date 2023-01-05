@@ -1,0 +1,15 @@
+# eclipse
+.project
+.settings
+.classpath
+# build
+target/
+# idea
+.idea
+*.ipr
+*.iml
+*.iws
+*.dat
+.vertx
+.DS_Store
+vf.*
