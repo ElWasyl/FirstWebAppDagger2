@@ -29,24 +29,66 @@ public class UserResourceTest {
 
     @Test
     public void shouldReturnCreatedWhenCorrectPostRequestSent() {
+        //given
         Entity entity = Entity.json("{\"email\":\"example@example.com\",\"password\":\"eXample143\"}");
+
+        //when
         Response response = target.path("users").request().post(entity);
+
+        //then
         Assertions.assertEquals(201, response.getStatus());
     }
 
     @Test
-    public void shouldReturnBadRequestWhenDuplicatePostRequestSent() {
+    public void shouldReturnUnauthorizedWhenDuplicatePostRequestSent() {
+        //given
         Entity entity = Entity.json("{\"email\":\"example2@example.com\",\"password\":\"eXample143\"}");
         target.path("users").request().post(entity);
+
+        //when
         Response response = target.path("users").request().post(entity);
-        Assertions.assertEquals(400, response.getStatus());
+
+        //then
+        Assertions.assertEquals(401, response.getStatus());
     }
 
     @Test
     public void shouldReturnOKWhenUserCreatedAndLoggedIn() {
+        //given
         Entity entity = Entity.json("{\"email\":\"example4@example.com\",\"password\":\"eXample143\"}");
         target.path("users").request().post(entity);
+
+        //when
         Response response = target.path("users/login").request().post(entity);
+
+        //then
         Assertions.assertEquals(200, response.getStatus());
     }
+
+    @Test
+    public void shouldReturnUnauthorizedWhenUserDoesntExist() {
+        //given
+        Entity entity = Entity.json("{\"email\":\"example5@example.com\",\"password\":\"eXample143\"}");
+
+        //when
+        Response response = target.path("users/login").request().post(entity);
+
+        //then
+        Assertions.assertEquals(401, response.getStatus());
+    }
+
+    @Test
+    public void shouldReturnUnauthorizedWhenIncorrectPasswordSupplied() {
+        //given
+        Entity entity = Entity.json("{\"email\":\"example6@example.com\",\"password\":\"eXample143\"}");
+        target.path("users").request().post(entity);
+        entity = Entity.json("{\"email\":\"example6@example.com\",\"password\":\"eXample145\"}");
+
+        //when
+        Response response = target.path("users/login").request().post(entity);
+
+        //then
+        Assertions.assertEquals(401, response.getStatus());
+    }
+
 }

@@ -1,62 +1,63 @@
 package org.exercise;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/users")
 public class UserResource {
-    static ObjectMapper mapper = new ObjectMapper();
-
-    public UserResource() {
-    }
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final EmailValidator emailValidator = new EmailValidator();
 
     @POST
-    @Consumes({"application/json"})
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response createUser(String json) {
         try {
-            User user = (User)mapper.readValue(json, User.class);
-            if (!EmailValidator.isValid(user.getEmail())) {
-                throw new UserDAOException("Email is invalid.");
+            User user = mapper.readValue(json, User.class);
+            if(emailValidator.isValid(user.getEmail()) && PasswordValidator.isValid(user.getPassword())) {
+                UserDAO.addUser(user);
             }
-
-            if (!PasswordValidator.isValid(user.getPassword())) {
-                throw new UserDAOException("Password is invalid. It can't be empty, and it has to contain at least at least three characters long, and contain at least one capital letter, at least one small letter and at least one number");
-            }
-
-            UserDAO.addUser(user);
-        } catch (UserDAOException var3) {
-            return Response.status(400).entity(var3.getMessage()).build();
-        } catch (Exception var4) {
+        } catch (UserDAOException e) {
+            return Response.status(401).build();
+        } catch (ValidationException e) {
+            return Response.status(401).entity(e.getMessage()).build();
+        } catch (JsonMappingException e) {
+            return Response.status(400).build();
+        } catch (JsonProcessingException e) {
             return Response.status(400).build();
         }
-
         return Response.status(201).build();
     }
 
     @POST
     @Path("/login")
-    @Consumes({"application/json"})
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response login(String json) {
         try {
-            Credentials credentials = (Credentials)mapper.readValue(json, Credentials.class);
+            Credentials credentials = mapper.readValue(json, Credentials.class);
             User user = UserDAO.getUser(credentials.getEmail());
             if (user == null) {
-                throw new UserDAOException("User doesn't exist");
+                throw new UserDAOException();
             }
-
             if (!user.getPassword().equals(credentials.getPassword())) {
-                throw new UserDAOException("Incorrect password");
+                throw new ValidationException("Incorrect password");
             }
-        } catch (UserDAOException var4) {
-            return Response.status(401).entity(var4.getMessage()).build();
-        } catch (JsonProcessingException var5) {
+        } catch (UserDAOException e) {
             return Response.status(401).build();
+        } catch (JsonMappingException e) {
+            return Response.status(400).build();
+        } catch (JsonProcessingException e) {
+            return Response.status(400).build();
+        } catch (ValidationException e) {
+            return Response.status(401).entity(e.getMessage()).build();
         }
-
-        return Response.status(200).build();
+        String token = TokenGenerator.generateToken();
+        return Response.ok(token).build();
     }
+
 }
