@@ -13,23 +13,24 @@ import jakarta.ws.rs.core.Response;
 public class UserResource {
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final EmailValidator emailValidator = new EmailValidator();
+    private static final PasswordValidator passwordValidator = new PasswordValidator();
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUser(String json) {
         try {
             User user = mapper.readValue(json, User.class);
-            if(emailValidator.isValid(user.getEmail()) && PasswordValidator.isValid(user.getPassword())) {
-                UserDAO.addUser(user);
-            }
+            emailValidator.isValid(user.getEmail());
+            passwordValidator.isValid(user.getPassword());
+            UserDAO.addUser(user);
         } catch (UserDAOException e) {
             return Response.status(401).build();
-        } catch (ValidationException e) {
-            return Response.status(401).entity(e.getMessage()).build();
         } catch (JsonMappingException e) {
             return Response.status(400).build();
         } catch (JsonProcessingException e) {
             return Response.status(400).build();
+        } catch (ValidationException e) {
+            return Response.status(401).entity(e.getMessage()).build();
         }
         return Response.status(201).build();
     }

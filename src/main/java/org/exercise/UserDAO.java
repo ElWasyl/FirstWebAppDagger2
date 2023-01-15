@@ -17,4 +17,5 @@ public class UserDAO {
     public static User getUser(String email) {
         return usersByEmail.get(email);
     }
+
 }
