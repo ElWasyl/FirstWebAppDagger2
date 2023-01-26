@@ -1,7 +1,6 @@
 package org.exercise;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -24,13 +23,11 @@ public class UserResource {
             passwordValidator.isValid(user.getPassword());
             UserDAO.addUser(user);
         } catch (UserDAOException e) {
-            return Response.status(401).build();
-        } catch (JsonMappingException e) {
-            return Response.status(400).build();
+            return Response.status(409).build();
         } catch (JsonProcessingException e) {
             return Response.status(400).build();
         } catch (ValidationException e) {
-            return Response.status(401).entity(e.getMessage()).build();
+            return Response.status(400).entity(e.getMessage()).build();
         }
         return Response.status(201).build();
     }
@@ -50,8 +47,6 @@ public class UserResource {
             }
         } catch (UserDAOException e) {
             return Response.status(401).build();
-        } catch (JsonMappingException e) {
-            return Response.status(400).build();
         } catch (JsonProcessingException e) {
             return Response.status(400).build();
         } catch (ValidationException e) {
