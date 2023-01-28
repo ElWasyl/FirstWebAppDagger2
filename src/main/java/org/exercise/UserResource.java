@@ -10,17 +10,18 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/users")
 public class UserResource {
-    private static final ObjectMapper mapper = new ObjectMapper();
-    private static final EmailValidator emailValidator = new EmailValidator();
-    private static final PasswordValidator passwordValidator = new PasswordValidator();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final EmailValidator EMAIL_VALIDATOR = new EmailValidator();
+    private static final PasswordValidator PASSWORD_VALIDATOR = new PasswordValidator();
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUser(String json) {
         try {
-            User user = mapper.readValue(json, User.class);
-            emailValidator.isValid(user.getEmail());
-            passwordValidator.isValid(user.getPassword());
+            User.UserBuilder userBuilder = OBJECT_MAPPER.readValue(json, User.UserBuilder.class);
+            User user = userBuilder.build();
+            EMAIL_VALIDATOR.isValid(user.getEmail());
+            PASSWORD_VALIDATOR.isValid(user.getPassword());
             UserDAO.addUser(user);
         } catch (UserDAOException e) {
             return Response.status(409).build();
@@ -37,7 +38,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response login(String json) {
         try {
-            Credentials credentials = mapper.readValue(json, Credentials.class);
+            Credentials credentials = OBJECT_MAPPER.readValue(json, Credentials.class);
             User user = UserDAO.getUser(credentials.getEmail());
             if (user == null) {
                 throw new UserDAOException();

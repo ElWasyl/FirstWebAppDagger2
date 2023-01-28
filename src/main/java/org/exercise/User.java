@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class User {
 
-    private String email;
-    private String password;
+    private final String email;
+    private final String password;
 
-    public User(@JsonProperty("email") String email, @JsonProperty("password") String password) {
-        this.email = email;
-        this.password = password;
+    public User(UserBuilder builder) {
+        this.email = builder.email;
+        this.password = builder.password;
     }
 
     public String getEmail() {
@@ -20,5 +20,19 @@ public class User {
         return this.password;
     }
 
+    public static class UserBuilder {
+        private final String email;
+        private final String password;
+
+        public UserBuilder(@JsonProperty("email") String email, @JsonProperty("password") String password) {
+            this.email = email;
+            this.password = password;
+        }
+
+        public User build() {
+            return new User(this);
+        }
+
+    }
 
 }

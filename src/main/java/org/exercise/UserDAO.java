@@ -4,18 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserDAO {
-    private static final Map<String, User> usersByEmail = new HashMap();
+    private static final Map<String, User> USERS_BY_EMAIL = new HashMap();
 
     public static void addUser(User user) throws UserDAOException {
-        if (usersByEmail.containsKey(user.getEmail())) {
+        if (USERS_BY_EMAIL.containsKey(user.getEmail())) {
             throw new UserDAOException();
         } else {
-            usersByEmail.put(user.getEmail(), user);
+            USERS_BY_EMAIL.put(user.getEmail(), user);
         }
     }
 
     public static User getUser(String email) {
-        return usersByEmail.get(email);
+        return USERS_BY_EMAIL.get(email);
     }
 
 }

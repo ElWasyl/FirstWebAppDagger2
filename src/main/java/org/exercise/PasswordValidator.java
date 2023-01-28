@@ -5,10 +5,10 @@ import java.util.regex.Pattern;
 
 public class PasswordValidator {
     private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,10}$";
-    private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+    private static final Pattern PATTERN = Pattern.compile(PASSWORD_PATTERN);
 
     public boolean isValid(String password) throws ValidationException {
-        Matcher matcher = pattern.matcher(password);
+        Matcher matcher = PATTERN.matcher(password);
         if (matcher.matches()) {
             return true;
         } else {

@@ -12,18 +12,18 @@ import static org.junit.jupiter.api.Named.named;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class PasswordValidatorTest {
-    private static final PasswordValidator passwordValidator = new PasswordValidator();
+    private static final PasswordValidator PASSWORD_VALIDATOR = new PasswordValidator();
 
     @Test
     void shouldReturnTrueWhenValidPassword() throws ValidationException {
         String password = "ValidPass1";
-        Assertions.assertTrue(passwordValidator.isValid(password));
+        Assertions.assertTrue(PASSWORD_VALIDATOR.isValid(password));
     }
 
     @ParameterizedTest
     @MethodSource("invalidPasswords")
     void shouldThrowErrorWhenInvalidPassword(String password) {
-        ValidationException thrown = Assertions.assertThrows(ValidationException.class, () -> passwordValidator.isValid(password));
+        ValidationException thrown = Assertions.assertThrows(ValidationException.class, () -> PASSWORD_VALIDATOR.isValid(password));
         Assertions.assertEquals("Password is invalid. It can't be empty, and it has to contain at least at least three characters long, and contain at least one capital letter, at least one small letter and at least one number", thrown.getMessage());
     }
     static Stream<Arguments> invalidPasswords() {

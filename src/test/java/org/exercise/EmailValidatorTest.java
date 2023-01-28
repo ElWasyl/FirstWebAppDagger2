@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Named.named;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class EmailValidatorTest {
-    private static final EmailValidator emailValidator = new EmailValidator();
+    private static final EmailValidator EMAIL_VALIDATOR = new EmailValidator();
 
     @ParameterizedTest
     @ValueSource(strings = {"user@domain.com",
@@ -22,14 +22,14 @@ class EmailValidatorTest {
             "username@yahoo.corporate.in"})
 
     void shouldReturnTrueWhenValidEmail(String email) throws ValidationException {
-        Assertions.assertTrue(emailValidator.isValid(email));
+        Assertions.assertTrue(EMAIL_VALIDATOR.isValid(email));
     }
 
     @ParameterizedTest
     @MethodSource("incorrectEmails")
     void shouldThrowErrorWhenInvalidEmail(String email) {
         ValidationException thrown = Assertions.assertThrows(ValidationException.class, () -> {
-            emailValidator.isValid(email);
+            EMAIL_VALIDATOR.isValid(email);
         });
         Assertions.assertEquals("Email is invalid.", thrown.getMessage());
     }

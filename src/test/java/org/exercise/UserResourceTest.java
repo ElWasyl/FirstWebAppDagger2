@@ -14,89 +14,89 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class UserResourceTest {
-    private static HttpServer server;
-    private static WebTarget target;
+    private static HttpServer SERVER;
+    private static WebTarget TARGET;
     private static final String LOGIN_PATH = "users/login";
     private static final String USERS_PATH = "users";
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @BeforeAll
-    public static void setUp() {
-        server = Main.startServer();
-        Client c = ClientBuilder.newClient();
-        target = c.target("http://localhost:8187/");
+    static void setUp() {
+        SERVER = Main.startServer();
+        Client client = ClientBuilder.newClient();
+        TARGET = client.target("http://localhost:8187/");
     }
 
     @AfterAll
-    public static void tearDown() {
-        server.shutdown();
+    static void tearDown() {
+        SERVER.shutdown();
     }
 
     @Test
-    public void shouldReturnCreatedWhenCorrectPostRequestSent() throws JsonProcessingException {
+    void shouldReturnCreatedWhenCorrectPostRequestSent() throws JsonProcessingException {
         //given
-        User user = new User("example@example.com","eXample141");
-        Entity entity = Entity.json(objectMapper.writeValueAsString(user));
+        User user = new User.UserBuilder("example@example.com","eXample141").build();
+        Entity entity = Entity.json(OBJECT_MAPPER.writeValueAsString(user));
 
         //when
-        Response response = target.path(USERS_PATH).request().post(entity);
+        Response response = TARGET.path(USERS_PATH).request().post(entity);
 
         //then
         Assertions.assertEquals(201, response.getStatus());
     }
 
     @Test
-    public void shouldReturnUnauthorizedWhenDuplicatePostRequestSent() throws JsonProcessingException {
+    void shouldReturnUnauthorizedWhenDuplicatePostRequestSent() throws JsonProcessingException {
         //given
-        User user = new User("example2@example.com","eXample142");
-        Entity entity = Entity.json(objectMapper.writeValueAsString(user));
-        target.path(USERS_PATH).request().post(entity);
+        User user = new User.UserBuilder("example2@example.com","eXample142").build();
+        Entity entity = Entity.json(OBJECT_MAPPER.writeValueAsString(user));
+        TARGET.path(USERS_PATH).request().post(entity);
 
         //when
-        Response response = target.path(USERS_PATH).request().post(entity);
+        Response response = TARGET.path(USERS_PATH).request().post(entity);
 
         //then
         Assertions.assertEquals(409, response.getStatus());
     }
 
     @Test
-    public void shouldReturnOKWhenUserCreatedAndLoggedIn() throws JsonProcessingException {
+    void shouldReturnOKWhenUserCreatedAndLoggedIn() throws JsonProcessingException {
         //given
-        User user = new User("example3@example.com","eXample143");
-        Entity entity = Entity.json(objectMapper.writeValueAsString(user));
-        target.path(USERS_PATH).request().post(entity);
+        User user = new User.UserBuilder("example3@example.com","eXample143").build();
+        Entity entity = Entity.json(OBJECT_MAPPER.writeValueAsString(user));
+        TARGET.path(USERS_PATH).request().post(entity);
 
         //when
-        Response response = target.path(LOGIN_PATH).request().post(entity);
+        Response response = TARGET.path(LOGIN_PATH).request().post(entity);
 
         //then
         Assertions.assertEquals(200, response.getStatus());
     }
 
     @Test
-    public void shouldReturnUnauthorizedWhenUserDoesntExist() throws JsonProcessingException {
+    void shouldReturnUnauthorizedWhenUserDoesntExist() throws JsonProcessingException {
         //given
-        User user = new User("example4@example.com","eXample144");
-        Entity entity = Entity.json(objectMapper.writeValueAsString(user));
+        User user = new User.UserBuilder("example4@example.com","eXample144").build();
+        Entity entity = Entity.json(OBJECT_MAPPER.writeValueAsString(user));
 
         //when
-        Response response = target.path(LOGIN_PATH).request().post(entity);
+        Response response = TARGET.path(LOGIN_PATH).request().post(entity);
 
         //then
         Assertions.assertEquals(401, response.getStatus());
     }
 
     @Test
-    public void shouldReturnUnauthorizedWhenIncorrectPasswordSupplied() throws JsonProcessingException {
+    void shouldReturnUnauthorizedWhenIncorrectPasswordSupplied() throws JsonProcessingException {
         //given
-        User user = new User("example5@example.com","eXample145");
-        Entity entity = Entity.json(objectMapper.writeValueAsString(user));
-        target.path(USERS_PATH).request().post(entity);
-        user = new User("example5@example.com","eXample144");
-        entity = Entity.json(objectMapper.writeValueAsString(user));
+        User user = new User.UserBuilder("example5@example.com","eXample145").build();
+        Entity entity = Entity.json(OBJECT_MAPPER.writeValueAsString(user));
+        TARGET.path(USERS_PATH).request().post(entity);
+        user = new User.UserBuilder("example5@example.com","eXample144").build();
+        entity = Entity.json(OBJECT_MAPPER.writeValueAsString(user));
 
         //when
-        Response response = target.path(LOGIN_PATH).request().post(entity);
+        Response response = TARGET.path(LOGIN_PATH).request().post(entity);
 
         //then
         Assertions.assertEquals(401, response.getStatus());
