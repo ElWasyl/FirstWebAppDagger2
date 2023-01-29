@@ -1,10 +1,9 @@
 package org.exercise;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Credentials {
+
     @JsonProperty
     private String email;
     @JsonProperty
@@ -17,4 +16,5 @@ public class Credentials {
     public String getPassword() {
         return this.password;
     }
+
 }
