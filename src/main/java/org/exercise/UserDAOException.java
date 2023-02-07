@@ -1,7 +1,11 @@
 package org.exercise;
 
-public class UserDAOException extends Exception {
-    public UserDAOException() {
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+
+public class UserDAOException extends WebApplicationException {
+    public UserDAOException(String message, Response.Status status) {
+        super(message, status);
     }
 
 }

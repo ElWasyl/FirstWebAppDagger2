@@ -1,5 +1,7 @@
 package org.exercise;
 
+import jakarta.ws.rs.core.Response;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,7 +14,7 @@ public class EmailValidator {
         if (matcher.matches()) {
             return true;
         } else {
-            throw new ValidationException("Email is invalid.");
+            throw new ValidationException("Email is invalid.", Response.Status.fromStatusCode(400));
         }
     }
 

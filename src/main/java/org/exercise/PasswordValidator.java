@@ -1,5 +1,7 @@
 package org.exercise;
 
+import jakarta.ws.rs.core.Response;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,7 +14,7 @@ public class PasswordValidator {
         if (matcher.matches()) {
             return true;
         } else {
-            throw new ValidationException("Password is invalid. It can't be empty, and it has to contain at least at least three characters long, and contain at least one capital letter, at least one small letter and at least one number");
+            throw new ValidationException("Password is invalid. It can't be empty, and it has to contain at least at least three characters long, and contain at least one capital letter, at least one small letter and at least one number", Response.Status.fromStatusCode(400));
         }
     }
 

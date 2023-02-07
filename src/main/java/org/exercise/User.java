@@ -21,10 +21,16 @@ public class User {
     }
 
     public static class UserBuilder {
-        private final String email;
-        private final String password;
 
-        public UserBuilder(@JsonProperty("email") String email, @JsonProperty("password") String password) {
+        @JsonProperty
+        private String email;
+        @JsonProperty
+        private String password;
+
+        public UserBuilder() {
+        }
+
+        public UserBuilder(String email, String password) {
             this.email = email;
             this.password = password;
         }
