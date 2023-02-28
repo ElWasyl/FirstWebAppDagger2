@@ -13,7 +13,7 @@ public class Main {
     }
 
     public static HttpServer startServer() {
-        final ResourceConfig rc = new ResourceConfig().packages("org.exercise");
+        ResourceConfig rc = new ResourceConfig().packages("org.exercise");
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 

@@ -2,7 +2,6 @@ package org.exercise;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Priority;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
@@ -15,4 +14,5 @@ public class JsonProcessingExceptionMapper implements ExceptionMapper<JsonProces
     public Response toResponse(JsonProcessingException exception) {
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
+
 }
