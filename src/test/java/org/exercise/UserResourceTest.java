@@ -102,4 +102,16 @@ public class UserResourceTest {
         Assertions.assertEquals(401, response.getStatus());
     }
 
+    @Test
+    void shouldReturnBadRequestWhenInvalidJSONSupplied() {
+        //given
+        Entity entity = Entity.json("{\"invalidfield1\": \"john@examle.com\",\"invalidfield2\": \"eXample143\"}");
+
+        //when
+        Response response = TARGET.path(USERS_PATH).request().post(entity);
+
+        //then
+        Assertions.assertEquals(400, response.getStatus());
+    }
+
 }
