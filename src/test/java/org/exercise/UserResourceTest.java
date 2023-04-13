@@ -7,11 +7,11 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
+import org.flywaydb.core.Flyway;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.h2.jdbcx.JdbcDataSource;
+import org.junit.jupiter.api.*;
+import javax.sql.DataSource;
 
 public class UserResourceTest {
     private static HttpServer SERVER;
@@ -25,11 +25,22 @@ public class UserResourceTest {
         SERVER = Main.startServer();
         Client client = ClientBuilder.newClient();
         TARGET = client.target("http://localhost:8187/");
+        DataSource dataSource = createDataSource();
+        Flyway flyway = Flyway.configure().dataSource(dataSource).locations("classpath:db/migration").load();
+        flyway.migrate();
     }
 
     @AfterAll
     static void tearDown() {
         SERVER.shutdown();
+    }
+
+    private static DataSource createDataSource() {
+        JdbcDataSource jdbcDataSource = new JdbcDataSource();
+        jdbcDataSource.setURL("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
+        jdbcDataSource.setUser("sa");
+        jdbcDataSource.setPassword("");
+        return jdbcDataSource;
     }
 
     @Test

@@ -1,5 +1,4 @@
 package org.exercise;
-
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
