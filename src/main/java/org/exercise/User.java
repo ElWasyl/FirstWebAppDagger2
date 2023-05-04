@@ -1,9 +1,7 @@
 package org.exercise;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 public class User {
 
@@ -28,15 +26,12 @@ public class User {
         private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{3,10}$";
 
         @JsonProperty
-        @NotBlank(message = "Email cannot be blank")
-        @Pattern(regexp = EMAIL_PATTERN, message = "Email is invalid.")
+        @Pattern(regexp = EMAIL_PATTERN, message = "Email is invalid. Please provide a valid email address.")
         private String email;
 
 
         @JsonProperty
-        @NotBlank(message = "Password cannot be blank")
-        @Size(min = 3, max = 10, message = "Password must be between 3 and 10 characters")
-        @Pattern(regexp = PASSWORD_PATTERN, message = "Password is invalid. It has to contain at least one capital letter, one small letter and one number")
+        @Pattern(regexp = PASSWORD_PATTERN, message = "Password is invalid. It has to contain at least one capital letter, one small letter and one number.")
         private String password;
 
         public UserBuilder() {

@@ -1,6 +1,7 @@
 package org.exercise;
-import java.sql.*;
 
+import java.sql.*;
+import java.time.LocalDateTime;
 
 public class UserDAO {
 
@@ -9,6 +10,7 @@ public class UserDAO {
     private static final String PASSWORD = "";
     private static final String INSERT_USER_SQL = "INSERT INTO users (email, password) VALUES (?,?)";
     private static final String SELECT_USERS_BY_EMAIL_SQL = "SELECT email, password FROM users WHERE email = ?";
+    private static final String REGISTER_USERS_TOKEN_SQL = "INSERT INTO tokens (email, token, expiration) VALUES (?,?,?)";
 
     public static void addUser(User user) throws UserDAOException {
 
@@ -32,12 +34,26 @@ public class UserDAO {
                 try (ResultSet resultSet = statement.executeQuery()) {
                     return resultSet.next() ? createUserFromResultSet(resultSet) : null;
                 }
+            } catch (SQLException e) {
+                throw new UserDAOException("There's been a conflict with the current state of the target resource");
             }
         } catch (SQLException e) {
             throw new UserDAOException("The server is currently unable to handle the request");
         }
     }
 
+    public static void registerToken(User user, String token) throws UserDAOException {
+        try (Connection connection = createConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(REGISTER_USERS_TOKEN_SQL)) {
+                statement.setString(1, user.getEmail());
+                statement.setString(2, token);
+                statement.setTimestamp(3, Timestamp.valueOf((LocalDateTime.now().plusDays(1))));
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new UserDAOException("The server is currently unable to handle the request");
+        }
+    }
     private static Connection createConnection() throws SQLException {
         return DriverManager.getConnection(URL, USERNAME, PASSWORD);
     }
