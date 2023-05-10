@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS tokens (
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOt NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expiration TIMESTAMP NOT NULL,
+    PRIMARY KEY (email),
+    FOREIGN KEY (email) REFERENCES users(email)
+);
