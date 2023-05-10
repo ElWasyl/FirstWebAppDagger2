@@ -12,15 +12,14 @@ import java.util.Set;
 
 @Path("/users")
 public class UserResource {
+    private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUser(@Valid User.UserBuilder userBuilder) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<User.UserBuilder>> violations = validator.validate(userBuilder);
+        Set<ConstraintViolation<User.UserBuilder>> violations = VALIDATOR.validate(userBuilder);
         if(!violations.isEmpty()) {
-            StringBuilder errorMessage = CheckViolations(violations);
-            throw new ValidationException(errorMessage.toString());
+            throw new ValidationException(CheckViolations(violations).toString());
         }
         User user = userBuilder.build();
         UserDAO.addUser(user);
@@ -31,11 +30,9 @@ public class UserResource {
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response login(@Valid User.UserBuilder userBuilder) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<User.UserBuilder>> violations = validator.validate(userBuilder);
+        Set<ConstraintViolation<User.UserBuilder>> violations = VALIDATOR.validate(userBuilder);
         if(!violations.isEmpty()) {
-            StringBuilder errorMessage = CheckViolations(violations);
-            throw new ValidationException(errorMessage.toString());
+            throw new ValidationException(CheckViolations(violations).toString());
         }
         User user = userBuilder.build();
         User existingUser = UserDAO.getUser(user.getEmail());

@@ -11,6 +11,7 @@ public class UserDAO {
     private static final String INSERT_USER_SQL = "INSERT INTO users (email, password) VALUES (?,?)";
     private static final String SELECT_USERS_BY_EMAIL_SQL = "SELECT email, password FROM users WHERE email = ?";
     private static final String REGISTER_USERS_TOKEN_SQL = "INSERT INTO tokens (email, token, expiration) VALUES (?,?,?)";
+    private static final String CHECK_IF_TOKEN_VALID_SQL = "SELECT expiration FROM tokens WHERE token = ?";
 
     public static void addUser(User user) throws UserDAOException {
 
@@ -32,7 +33,11 @@ public class UserDAO {
             try (PreparedStatement statement = connection.prepareStatement(SELECT_USERS_BY_EMAIL_SQL)) {
                 statement.setString(1, email);
                 try (ResultSet resultSet = statement.executeQuery()) {
-                    return resultSet.next() ? createUserFromResultSet(resultSet) : null;
+                    if (resultSet.next()) {
+                        return createUserFromResultSet(resultSet);
+                    } else {
+                        return null;
+                    }
                 }
             } catch (SQLException e) {
                 throw new UserDAOException("There's been a conflict with the current state of the target resource");
@@ -54,6 +59,25 @@ public class UserDAO {
             throw new UserDAOException("The server is currently unable to handle the request");
         }
     }
+
+    public static boolean checkToken(String token) throws UserDAOException {
+        try (Connection connection = createConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(CHECK_IF_TOKEN_VALID_SQL)) {
+                statement.setString(1, token);
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        Timestamp timestamp = resultSet.getTimestamp("expiration");
+                        return timestamp.after(new Timestamp(System.currentTimeMillis()));
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new UserDAOException("The server is currently unable to handle the request");
+        }
+    }
+
     private static Connection createConnection() throws SQLException {
         return DriverManager.getConnection(URL, USERNAME, PASSWORD);
     }
